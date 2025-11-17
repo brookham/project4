@@ -18,9 +18,9 @@ export async function POST(request: Request){
     return Response.json({message: "invalid user id"})
   }
 
-  const fileName = `${id}/image.webp`
+  const fileName = `${image}_image.webp`
 
-  const { url } = await put(fileName, image, {access: 'public', allowOverwrite: true})
+  const { url } = await put(fileName, image, {access: 'public', addRandomSuffix: true})
 
   return Response.json({imageUrl: url})
 

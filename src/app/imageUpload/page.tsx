@@ -4,6 +4,7 @@ import { useProfile } from "@/contexts/profileContext"
 import { Box, ImageList, ImageListItem, Button, Avatar } from "@mui/material"
 import { upload } from "@vercel/blob/client"
 import { useEffect, useState } from "react"
+import Image from "next/image"
 
 export default function Home() {
 
