@@ -36,10 +36,10 @@ export default function ImageUplaod() {
 
   async function handleSave() {
     if (profile) {
-      updateProfile(profile, image)
+      await updateProfile(profile, image)
 
     }
-    getImages()
+    await getImages()
   }
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export default function ImageUplaod() {
 
   return (
     <Box>
-      <Button onClick={handleSave} variant="contained" component="label">
+      <Button variant="contained" component="label">
         <input type="file" hidden accept="image/*" onChange={(e => setImage(e.target.files?.[0]))} />
         Upload Image
       </Button>

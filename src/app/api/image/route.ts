@@ -25,7 +25,7 @@ export async function POST(request: Request){
 
   const filename = `${userFolder}image-${Date.now()}.webp`
 
-  const { url } = await put(filename, image, {access: 'public'})
+  const { url } = await put(filename, image, {access: 'public', allowOverwrite: true})
 
   return Response.json({imageUrl: url})
 
