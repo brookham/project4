@@ -2,13 +2,16 @@
 
 import { createContext, useContext } from "react"
 
-import { Profile } from "@/types/profile"
+import { ImageInfo } from "@/types/imageInfo"
+
+import { useRouter } from "next/navigation"
 
 
 //data structure
 type ProfileProps = {
-  profile: Profile | undefined,
-  updateProfile: (profile: Profile, images?: File[]) => Promise<string[] | null>
+  profile: ImageInfo | undefined,
+  updateProfile: (profile: ImageInfo, image: File | undefined) => void,
+  signout: () => void
 }
 
 //create context
@@ -16,42 +19,39 @@ const ProfileContext = createContext<ProfileProps | undefined>(undefined)
 
 
 //provider
-export function ProfileProvider(props: { profile: Profile | undefined, children: React.ReactNode }) {
+export function ProfileProvider(props: { profile: ImageInfo | undefined, children: React.ReactNode }) {
 
-  async function updateProfile(profile: Profile, images?: File[]) {
-    const uploaded: string[] = []
+    const router = useRouter()
 
-    if (!images || images.length === 0) {
-      return null
-    }
 
-    for (const image of images) {
-      try {
-        const formData = new FormData()
-        formData.append("id", profile.id)
-        formData.append("image", image)
+  async function updateProfile(profile: ImageInfo, image: File | undefined) {
 
-        const res = await fetch("/api/image", {
+    let imageUrl: string | null = null
+    if (image) {
+      const formData = new FormData()
+      formData.append("id", profile.id)
+      formData.append("image", image)
+      const res = await fetch("/api/image",
+        {
           method: "POST",
-          body: formData,
-        })
-
-        if (!res.ok) continue
-
-        const data = await res.json()
-        const url: string | null = data?.imageUrl ?? null
-        if (url) uploaded.push(url)
-      } catch (err) {
-        // ignore and continue uploading remaining files
-        continue
-      }
+          body: formData
+        }
+      )
+      const data = await res.json()
+      imageUrl = data.imageUrl ?? null
     }
-
-    return uploaded.length > 0 ? uploaded : null
+    return imageUrl
   }
 
+  async function signout(){
+    await fetch("api/signout")
+    router.push("/login")
+  }
+
+  
+
   return (
-    <ProfileContext.Provider value={{ profile: props.profile, updateProfile }}>
+    <ProfileContext.Provider value={{ profile: props.profile, updateProfile, signout }}>
       {props.children}
     </ProfileContext.Provider>
   )

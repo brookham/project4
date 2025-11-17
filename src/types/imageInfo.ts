@@ -1,4 +1,4 @@
-export type Profile = {
+export type ImageInfo = {
   id: string,
   username: string | null,
   full_name: string | null,

@@ -1,7 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import type { Metadata } from "next";
 import { ProfileProvider } from "@/contexts/profileContext";
-import { Profile, profileSelectString } from "@/types/profile";
+import { ImageInfo, profileSelectString } from "@/types/imageInfo";
 
 export const metadata: Metadata = {
   title: "Project 4",
@@ -27,7 +27,7 @@ export default async function RootLayout({
   );
 }
 
-async function getProfile(): Promise<Profile | undefined> {
+async function getProfile(): Promise<ImageInfo | undefined> {
   const supabase = await createClient()
 
   const user = await supabase.auth.getUser()
@@ -43,7 +43,7 @@ async function getProfile(): Promise<Profile | undefined> {
 
   console.log(data.data)
 
-  let profile: Profile | undefined = undefined
+  let profile: ImageInfo | undefined = undefined
 
   if (data.data && data.data.length > 0) {
     profile = data.data[0]
