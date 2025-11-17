@@ -31,7 +31,7 @@ export default function Home() {
 
   return (
     <Box>
-      <Button onClick={handleSave} variant="contained" component="label">
+      <Button onClick={handleSave}variant="contained" component="label">
         <input type="file" hidden accept="image/*" onChange={(e => setImage(e.target.files?.[0]))} />
         Upload Image
       </Button>
