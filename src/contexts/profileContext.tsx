@@ -8,7 +8,7 @@ import { Profile } from "@/types/profile"
 //data structure
 type ProfileProps = {
   profile: Profile | undefined,
-  updateProfile: (profile: Profile, image: File | undefined) => void
+  updateProfile: (profile: Profile, images?: File[]) => Promise<string[] | null>
 }
 
 //create context
@@ -18,23 +18,36 @@ const ProfileContext = createContext<ProfileProps | undefined>(undefined)
 //provider
 export function ProfileProvider(props: { profile: Profile | undefined, children: React.ReactNode }) {
 
-  async function updateProfile(profile: Profile, image: File | undefined) {
+  async function updateProfile(profile: Profile, images?: File[]) {
+    const uploaded: string[] = []
 
-    let imageUrl: string | null = null
-    if (image) {
-      const formData = new FormData()
-      formData.append("id", profile.id)
-      formData.append("image", image)
-      const res = await fetch("/api/image",
-        {
-          method: "POST",
-          body: formData
-        }
-      )
-      const data = await res.json()
-      imageUrl = data.imageUrl ?? null
+    if (!images || images.length === 0) {
+      return null
     }
-    return imageUrl
+
+    for (const image of images) {
+      try {
+        const formData = new FormData()
+        formData.append("id", profile.id)
+        formData.append("image", image)
+
+        const res = await fetch("/api/image", {
+          method: "POST",
+          body: formData,
+        })
+
+        if (!res.ok) continue
+
+        const data = await res.json()
+        const url: string | null = data?.imageUrl ?? null
+        if (url) uploaded.push(url)
+      } catch (err) {
+        // ignore and continue uploading remaining files
+        continue
+      }
+    }
+
+    return uploaded.length > 0 ? uploaded : null
   }
 
   return (
